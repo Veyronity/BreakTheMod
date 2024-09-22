@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "breakthemod",
+	"version": "${version}",
+	"name": "BreakTheMod",
+	"description": "This is the mod version of breakthebot.",
+	"authors": [
+		"chariskar"
+	],
+	"contact": {
+		"project": "https://github.com/Veyronity/BreakTheMod",
+		"author": "https://github.com/chariskar"
+	},
+	"license": "AGPL-V3",
+	"icon": "assets/breakthemod/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"client": [
+			"com.BreakTheMod"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.5",
+		"minecraft": "~1.20.4",
+		"java": ">=20"
+	},
+	"suggests": {
+		"fabric-api": ">=0.97.2+1.20.4"
+	}
+}
