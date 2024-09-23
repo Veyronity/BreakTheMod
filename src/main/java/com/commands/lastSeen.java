@@ -56,7 +56,7 @@ public class lastSeen {
                             JsonObject payload = new JsonObject();
                             JsonObject template = new JsonObject();
                             template.addProperty("timestamps", true);
-                            
+                            template.addProperty("status", true);
                             JsonArray queryArray = new JsonArray();
                             queryArray.add(username);
                             payload.add("query", queryArray); 
@@ -76,11 +76,22 @@ public class lastSeen {
                             JsonObject timestamps = parsedResponse.get(0).getAsJsonObject().get("timestamps").getAsJsonObject();
                             long lastOnline = timestamps.get("lastOnline").getAsLong();
 
-                            List<Long> date = new timestamps().parseTimestamp(lastOnline);
-                            String message = String.format("%s was last online %d days, %d hours, and %d minutes ago.", username, date.get(0), date.get(1), date.get(2));
+                            String statusMessage;
+                            List<Long> offlineDate = new timestamps().parseTimestamp(lastOnline);
+                            JsonElement online = parsedResponse.get(0).getAsJsonObject().get("status").getAsJsonObject().get("isOnline");
+                            if (!online.getAsBoolean()) {
+                                statusMessage = String.format("%s has been offline for %d days, %d hours, and %d minutes.", username, offlineDate.get(0), offlineDate.get(1), offlineDate.get(2));
+                                Text formattedMessage = Text.literal(statusMessage).formatted(Formatting.RED);
+                                client.player.sendMessage(formattedMessage, false);
 
-                            Text formattedMessage = Text.literal(message).formatted(Formatting.RED);
-                            client.player.sendMessage(formattedMessage, false);
+                            } else {
+                                statusMessage = String.format("%s is currently online, for %d days, %d hours, and %d minutes.", username, offlineDate.get(0), offlineDate.get(1), offlineDate.get(2));
+                                Text formattedMessage = Text.literal(statusMessage).formatted(Formatting.GREEN);
+                                client.player.sendMessage(formattedMessage, false);
+                            }
+
+
+                            
                         } catch (Exception e) {
                             e.printStackTrace();
                             client.player.sendMessage(Text.literal("Unable to fetch user data").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
