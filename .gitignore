@@ -39,3 +39,6 @@ replay_*.log
 *.hprof
 *.jfr
 libs
+
+test.ts
+.gitignore

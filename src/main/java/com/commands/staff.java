@@ -16,13 +16,16 @@
  *
  * For more information, please visit <https://discord.gg/kwvrgt6jH5>.
  */
-package com.utils.commands;
+package com.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.utils.fetch;
 import com.google.gson.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
@@ -35,8 +38,7 @@ public class staff {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
 
-    // Register client-side commands
-     public static void register() {
+    public static void register() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             LiteralArgumentBuilder<FabricClientCommandSource> command = LiteralArgumentBuilder
             .<FabricClientCommandSource>literal("staff")
@@ -96,9 +98,12 @@ public class staff {
                                     }
                                 } else {
                                     LOGGER.error("Missing or invalid 'status' for player: " + name);
+                                    client.player.sendMessage(Text.literal("Command has exited with an error, Contact Dev").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+
                                 }
                             } else {
                                 LOGGER.error("Missing or invalid 'stats' for player: " + name);
+                                client.player.sendMessage(Text.literal("Command has exited with an error, Contact Dev").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
                             }
                         }
                     }
@@ -111,7 +116,7 @@ public class staff {
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    client.player.sendMessage(Text.of("Unable to fetch staff list"), false);
+                    client.player.sendMessage(Text.literal("Command has exited with an error").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
                     LOGGER.error("Fetch has exited with an exception: " + e.getMessage());
                     return 0;
                 }

@@ -18,11 +18,12 @@
  */
 package com;
 
-import com.utils.commands.staff;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.commands.*;
 
 public class BreakTheMod implements ClientModInitializer {
 
@@ -35,6 +36,7 @@ public class BreakTheMod implements ClientModInitializer {
         if (client != null) {
             LOGGER.info("Initializing client commands.");
             staff.register();
+            lastSeen.register();
             LOGGER.debug("breakthemod Initialised");
         } else {
             LOGGER.error("Minecraft client instance is null, cannot initialize commands.");
