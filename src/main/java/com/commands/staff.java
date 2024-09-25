@@ -116,7 +116,7 @@ public class staff {
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    client.player.sendMessage(Text.literal("Command has exited with an error").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                    client.player.sendMessage(Text.literal("Command has exited with an exception").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
                     LOGGER.error("Fetch has exited with an exception: " + e.getMessage());
                     return 0;
                 }

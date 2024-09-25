@@ -94,7 +94,7 @@ public class lastSeen {
                             
                         } catch (Exception e) {
                             e.printStackTrace();
-                            client.player.sendMessage(Text.literal("Unable to fetch user data").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                            client.player.sendMessage(Text.literal("Command has exited with an exception").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
                             LOGGER.error("Command has exited with an exception: " + e.getMessage());
                             return 0;
                         }
