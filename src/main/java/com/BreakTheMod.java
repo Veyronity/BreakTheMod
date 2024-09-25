@@ -38,6 +38,7 @@ public class BreakTheMod implements ClientModInitializer {
             staff.register();
             lastSeen.register();
             locate.register();
+            coords.register();
             LOGGER.debug("breakthemod Initialised");
         } else {
             LOGGER.error("Minecraft client instance is null, cannot initialize commands.");
