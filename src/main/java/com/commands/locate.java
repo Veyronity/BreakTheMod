@@ -16,8 +16,8 @@
  *
  * For more information, please visit <https://discord.gg/kwvrgt6jH5>.
  */
-package com.commands;
 
+package com.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.utils.fetch;
@@ -26,6 +26,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.text.Style;
+import net.minecraft.text.ClickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -83,7 +84,11 @@ public class locate {
                                         int x = coordinates.get("x").getAsInt();
                                         int z = coordinates.get("z").getAsInt();
 
-                                        client.player.sendMessage(Text.literal(String.format("%s is located at X: %d, Z: %d.\nAurora Dynmap: %s", name, x, z, String.format("https://map.earthmc.net/?world=minecraft_overworld&zoom=3&x=%d&z=%d", x, z))).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), false);
+                                        String hyperlink = String.format("https://map.earthmc.net/?world=minecraft_overworld&zoom=3&x=%d&z=%d", x, z);
+                                        Text message = Text.literal(String.format("%s is located at X: %d, Z: %d. ", name, x, z))
+                                            .append(Text.literal("Aurora Dynmap").formatted(Formatting.AQUA).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, hyperlink))));
+                                        
+                                        client.player.sendMessage(message, false);
                                     } else {
                                         client.player.sendMessage(Text.literal("Location not found.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
                                     }
