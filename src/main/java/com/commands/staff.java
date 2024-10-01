@@ -28,102 +28,117 @@ import net.minecraft.util.Formatting;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 public class staff {
-
 
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
 
     public static void register() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             LiteralArgumentBuilder<FabricClientCommandSource> command = LiteralArgumentBuilder
-            .<FabricClientCommandSource>literal("staff")
-            .executes(context -> {
-                MinecraftClient client = MinecraftClient.getInstance();
+                .<FabricClientCommandSource>literal("onlinestaff")
+                .executes(context -> {
+                    MinecraftClient client = MinecraftClient.getInstance();
 
-                if (client.player == null) {
-                    LOGGER.error("Player instance is null, cannot send feedback.");
-                }
-
-                try {
-                    fetch Fetch = new fetch();
-
-                    JsonObject staff = JsonParser.parseString(Fetch.Fetch("https://raw.githubusercontent.com/jwkerr/staff/master/staff.json", null)).getAsJsonObject();
-                    JsonArray staffList = new JsonArray();
-                    String[] roles = {"owner", "admin", "developer", "staffmanager", "moderator", "helper"};
-
-                    for (String role : roles) {
-                        if (staff.has(role)) {
-                            JsonArray roleArray = staff.getAsJsonArray(role);
-                            for (JsonElement roleElement : roleArray) {
-                                if (roleElement.isJsonPrimitive() && roleElement.getAsJsonPrimitive().isString()) {
-                                    String uuid = roleElement.getAsString();
-                                    staffList.add(uuid); 
-                                } else {
-                                    LOGGER.error("Unexpected element in role array for role: " + role);
-                                }
-                            }
-                        }
+                    if (client.player == null) {
+                        LOGGER.error("Player instance is null, cannot send feedback.");
+                        return 0;
                     }
 
-                    // Create the payload to send to the second API
-                    JsonObject payload = new JsonObject();
-                    payload.add("query", staffList);
-                    JsonObject template = new JsonObject();
-                    template.addProperty("name", true);
-                    template.addProperty("uuid", true);
-                    template.addProperty("status", true);
-                    payload.add("template", template);
+                    // Run the network request asynchronously to avoid freezing the game
+                    CompletableFuture.runAsync(() -> {
+                        try {
+                            fetch Fetch = new fetch();
 
-                    JsonArray response = JsonParser.parseString(Fetch.Fetch("https://api.earthmc.net/v3/aurora/players", payload.toString())).getAsJsonArray();
+                            JsonObject staff = JsonParser.parseString(Fetch.Fetch("https://raw.githubusercontent.com/jwkerr/staff/master/staff.json", null)).getAsJsonObject();
+                            JsonArray staffList = new JsonArray();
+                            String[] roles = {"owner", "admin", "developer", "staffmanager", "moderator", "helper"};
 
-                    List<String> onlineStaff = new ArrayList<>();
-
-                    for (JsonElement playerElement : response) {
-                        if (playerElement.isJsonObject()) {
-                            JsonObject playerObj = playerElement.getAsJsonObject();
-                            String name = playerObj.get("name").getAsString();
-                            if (playerObj.has("status") && playerObj.get("status").isJsonObject()) {
-                                JsonObject statsObj = playerObj.getAsJsonObject("status");
-                    
-                                if (statsObj.has("isOnline") && statsObj.get("isOnline").isJsonPrimitive() && statsObj.get("isOnline").getAsJsonPrimitive().isBoolean()) {
-                                    boolean status = statsObj.get("isOnline").getAsBoolean();
-                                    
-                                    if (status) {
-                                        onlineStaff.add(name);
+                            for (String role : roles) {
+                                if (staff.has(role)) {
+                                    JsonArray roleArray = staff.getAsJsonArray(role);
+                                    for (JsonElement roleElement : roleArray) {
+                                        if (roleElement.isJsonPrimitive() && roleElement.getAsJsonPrimitive().isString()) {
+                                            String uuid = roleElement.getAsString();
+                                            staffList.add(uuid); 
+                                        } else {
+                                            LOGGER.error("Unexpected element in role array for role: " + role);
+                                        }
                                     }
-                                } else {
-                                    LOGGER.error("Missing or invalid 'status' for player: " + name);
-                                    client.player.sendMessage(Text.literal("Command has exited with an error, Contact Dev").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
-
                                 }
-                            } else {
-                                LOGGER.error("Missing or invalid 'stats' for player: " + name);
-                                client.player.sendMessage(Text.literal("Command has exited with an error, Contact Dev").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
                             }
+
+                            // Create the payload to send to the second API
+                            JsonObject payload = new JsonObject();
+                            payload.add("query", staffList);
+                            JsonObject template = new JsonObject();
+                            template.addProperty("name", true);
+                            template.addProperty("uuid", true);
+                            template.addProperty("status", true);
+                            payload.add("template", template);
+
+                            JsonArray response = JsonParser.parseString(Fetch.Fetch("https://api.earthmc.net/v3/aurora/players", payload.toString())).getAsJsonArray();
+
+                            List<String> onlineStaff = new ArrayList<>();
+
+                            for (JsonElement playerElement : response) {
+                                if (playerElement.isJsonObject()) {
+                                    JsonObject playerObj = playerElement.getAsJsonObject();
+                                    String name = playerObj.get("name").getAsString();
+                                    if (playerObj.has("status") && playerObj.get("status").isJsonObject()) {
+                                        JsonObject statsObj = playerObj.getAsJsonObject("status");
+                            
+                                        if (statsObj.has("isOnline") && statsObj.get("isOnline").isJsonPrimitive() && statsObj.get("isOnline").getAsJsonPrimitive().isBoolean()) {
+                                            boolean status = statsObj.get("isOnline").getAsBoolean();
+                                            
+                                            if (status) {
+                                                onlineStaff.add(name);
+                                            }
+                                        } else {
+                                            LOGGER.error("Missing or invalid 'status' for player: " + name);
+                                            sendMessage(client, Text.literal("Command has exited with an error, Contact Dev").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+                                        }
+                                    } else {
+                                        LOGGER.error("Missing or invalid 'stats' for player: " + name);
+                                        sendMessage(client, Text.literal("Command has exited with an error, Contact Dev").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+                                    }
+                                }
+                            }
+
+                            client.execute(() -> {
+                                if (!onlineStaff.isEmpty()) {
+                                    sendMessage(client, Text.of("Online staff: " + String.join(", ", onlineStaff)));
+                                } else {
+                                    sendMessage(client, Text.of("No staff members are online."));
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            client.execute(() -> sendMessage(client, Text.literal("Command has exited with an exception").setStyle(Style.EMPTY.withColor(Formatting.RED))));
+                            LOGGER.error("Fetch has exited with an exception: " + e.getMessage());
                         }
-                    }
+                    });
 
-                    if (!onlineStaff.isEmpty()) {
-                        client.player.sendMessage(Text.of("Online staff: " + String.join(", ", onlineStaff)), false);
-                    } else {
-                        client.player.sendMessage(Text.of("No staff members are online."), false);
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    client.player.sendMessage(Text.literal("Command has exited with an exception").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
-                    LOGGER.error("Fetch has exited with an exception: " + e.getMessage());
-                    return 0;
-                }
-                return 1;
-            });
+                    return 1;
+                });
 
             dispatcher.register(command);  
         });
-    }   
+    }
+
+    private static void sendMessage(MinecraftClient client, Text message) {
+        client.execute(() -> {
+            if (client.player != null) {
+                client.player.sendMessage(message, false);
+            }
+        });
+    }
 }

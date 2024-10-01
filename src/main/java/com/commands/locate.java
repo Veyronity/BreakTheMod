@@ -32,6 +32,8 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
+import java.util.concurrent.CompletableFuture;
+
 public class locate {
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
 
@@ -45,7 +47,7 @@ public class locate {
                         .<FabricClientCommandSource, String>argument("type", StringArgumentType.string())
                         .executes(context -> {
                             String name = StringArgumentType.getString(context, "name");
-                            String type = StringArgumentType.getString(context, "type").toLowerCase(); 
+                            String type = StringArgumentType.getString(context, "type").toLowerCase();
                             MinecraftClient client = MinecraftClient.getInstance();
 
                             if (client.player == null) {
@@ -53,47 +55,44 @@ public class locate {
                                 return 0;
                             }
 
-                            try {
-                                fetch FetchInstance = new fetch();
-                                JsonObject payload = new JsonObject();
-                                JsonArray queryArray = new JsonArray();
-                                queryArray.add(name);
-                                payload.add("query", queryArray);  
-                                JsonObject template = new JsonObject();
-                                template.addProperty("coordinates", true);  
-                                payload.add("template", template);
+                            CompletableFuture.runAsync(() -> {
+                                try {
+                                    fetch FetchInstance = new fetch();
+                                    JsonObject payload = new JsonObject();
+                                    JsonArray queryArray = new JsonArray();
+                                    queryArray.add(name);
+                                    payload.add("query", queryArray);  
+                                    JsonObject template = new JsonObject();
+                                    template.addProperty("coordinates", true);  
+                                    payload.add("template", template);
 
-                                String apiUrl = "";
-                                if ("town".equals(type)) {
-                                    apiUrl = "https://api.earthmc.net/v3/aurora/towns";
-                                } else if ("nation".equals(type)) {
-                                    apiUrl = "https://api.earthmc.net/v3/aurora/nations";
-                                } else {
-                                    client.player.sendMessage(Text.literal("Invalid type! Use 'town' or 'nation'.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
-                                    return 0;
+                                    String apiUrl = "";
+                                    if ("town".equals(type)) {
+                                        apiUrl = "https://api.earthmc.net/v3/aurora/towns";
+                                    } else if ("nation".equals(type)) {
+                                        apiUrl = "https://api.earthmc.net/v3/aurora/nations";
+                                    } else {
+                                        client.player.sendMessage(Text.literal("Invalid type! Use 'town' or 'nation'.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                        return;
+                                    }
+
+                                    JsonArray response = JsonParser.parseString(FetchInstance.Fetch(apiUrl, payload.toString())).getAsJsonArray();
+
+                                    if (response.size() > 0) {
+                                        JsonObject coordinates = response.get(0).getAsJsonObject().get("coordinates").getAsJsonObject().get("spawn").getAsJsonObject();
+                                        int x = coordinates.get("x").getAsInt();
+                                        int z = coordinates.get("z").getAsInt();
+
+                                        client.player.sendMessage(Text.literal(String.format("%s is located at X: %d, Z: %d.\nAurora Dynmap: %s", name, x, z, String.format("https://map.earthmc.net/?world=minecraft_overworld&zoom=3&x=%d&z=%d", x, z))).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), false);
+                                    } else {
+                                        client.player.sendMessage(Text.literal("Location not found.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    client.player.sendMessage(Text.literal("Command exited with an exception.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                    LOGGER.error("Command exited with an exception: " + e.getMessage());
                                 }
-
-                                JsonArray response = JsonParser.parseString(FetchInstance.Fetch(apiUrl, payload.toString())).getAsJsonArray();
-                                
-                                if (response.size() > 0) {
-                                    JsonObject coordinates = response.get(0).getAsJsonObject().get("coordinates").getAsJsonObject().get("spawn").getAsJsonObject();
-                                    int x = coordinates.get("x").getAsInt();
-                                    int z = coordinates.get("z").getAsInt();
-
-                                    String mapUrl = String.format("https://map.earthmc.net/?world=minecraft_overworld&zoom=3&x=%d&z=%d", x, z);
-                                    String message = String.format("%s is located at X: %d, Z: %d.\nAurora Dynmap: %s", name, x, z, mapUrl);
-
-                                    client.player.sendMessage(Text.literal(message).setStyle(Style.EMPTY.withColor(Formatting.AQUA)), false);
-                                } else {
-                                    client.player.sendMessage(Text.literal("Location not found.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
-                                }
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                client.player.sendMessage(Text.literal("Command exited with an exception.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
-                                LOGGER.error("Command exited with an exception: " + e.getMessage());
-                                return 0;
-                            }
+                            });
 
                             return 1;  // Command executed successfully
                         })

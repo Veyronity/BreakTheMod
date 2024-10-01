@@ -32,7 +32,9 @@ import org.slf4j.LoggerFactory;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import com.mojang.brigadier.arguments.StringArgumentType;
+
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class lastSeen {
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
@@ -52,54 +54,52 @@ public class lastSeen {
                             return 0;
                         }
 
-                        try {
-                            JsonObject payload = new JsonObject();
-                            JsonObject template = new JsonObject();
-                            template.addProperty("timestamps", true);
-                            template.addProperty("status", true);
-                            JsonArray queryArray = new JsonArray();
-                            queryArray.add(username);
-                            payload.add("query", queryArray); 
-                            
-                            payload.add("template", template);
+                        CompletableFuture.runAsync(() -> {
+                            try {
+                                JsonObject payload = new JsonObject();
+                                JsonObject template = new JsonObject();
+                                template.addProperty("timestamps", true);
+                                template.addProperty("status", true);
+                                JsonArray queryArray = new JsonArray();
+                                queryArray.add(username);
+                                payload.add("query", queryArray);
+                                
+                                payload.add("template", template);
 
-                            String response = new fetch().Fetch("https://api.earthmc.net/v3/aurora/players", payload.toString());
+                                String response = new fetch().Fetch("https://api.earthmc.net/v3/aurora/players", payload.toString());
 
-                            JsonElement element = JsonParser.parseString(response);
-                            if (!element.isJsonArray()) {
-                                LOGGER.error("Expected JSON Array but got: " + response);
-                                client.player.sendMessage(Text.literal("Unexpected response format").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
-                                return 0;
+                                JsonElement element = JsonParser.parseString(response);
+                                if (!element.isJsonArray()) {
+                                    LOGGER.error("Expected JSON Array but got: " + response);
+                                    client.player.sendMessage(Text.literal("Unexpected response format").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                    return;
+                                }
+                                JsonArray parsedResponse = element.getAsJsonArray();
+
+                                JsonObject timestamps = parsedResponse.get(0).getAsJsonObject().get("timestamps").getAsJsonObject();
+                                long lastOnline = timestamps.get("lastOnline").getAsLong();
+
+                                String statusMessage;
+                                List<Long> offlineDate = new timestamps().parseTimestamp(lastOnline);
+                                JsonElement online = parsedResponse.get(0).getAsJsonObject().get("status").getAsJsonObject().get("isOnline");
+                                if (!online.getAsBoolean()) {
+                                    statusMessage = String.format("%s has been offline for %d days, %d hours, and %d minutes.", username, offlineDate.get(0), offlineDate.get(1), offlineDate.get(2));
+                                    Text formattedMessage = Text.literal(statusMessage).formatted(Formatting.RED);
+                                    client.player.sendMessage(formattedMessage, false);
+                                } else {
+                                    statusMessage = String.format("%s is currently online, for %d days, %d hours, and %d minutes.", username, offlineDate.get(0), offlineDate.get(1), offlineDate.get(2));
+                                    Text formattedMessage = Text.literal(statusMessage).formatted(Formatting.GREEN);
+                                    client.player.sendMessage(formattedMessage, false);
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                client.player.sendMessage(Text.literal("Command has exited with an exception").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                LOGGER.error("Command has exited with an exception: " + e.getMessage());
                             }
-                            JsonArray parsedResponse = element.getAsJsonArray();
+                        });
 
-                            JsonObject timestamps = parsedResponse.get(0).getAsJsonObject().get("timestamps").getAsJsonObject();
-                            long lastOnline = timestamps.get("lastOnline").getAsLong();
-
-                            String statusMessage;
-                            List<Long> offlineDate = new timestamps().parseTimestamp(lastOnline);
-                            JsonElement online = parsedResponse.get(0).getAsJsonObject().get("status").getAsJsonObject().get("isOnline");
-                            if (!online.getAsBoolean()) {
-                                statusMessage = String.format("%s has been offline for %d days, %d hours, and %d minutes.", username, offlineDate.get(0), offlineDate.get(1), offlineDate.get(2));
-                                Text formattedMessage = Text.literal(statusMessage).formatted(Formatting.RED);
-                                client.player.sendMessage(formattedMessage, false);
-
-                            } else {
-                                statusMessage = String.format("%s is currently online, for %d days, %d hours, and %d minutes.", username, offlineDate.get(0), offlineDate.get(1), offlineDate.get(2));
-                                Text formattedMessage = Text.literal(statusMessage).formatted(Formatting.GREEN);
-                                client.player.sendMessage(formattedMessage, false);
-                            }
-
-
-                            
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            client.player.sendMessage(Text.literal("Command has exited with an exception").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
-                            LOGGER.error("Command has exited with an exception: " + e.getMessage());
-                            return 0;
-                        }
-
-                        return 1;
+                        return 1; // Command executed successfully
                     })
                 );
 

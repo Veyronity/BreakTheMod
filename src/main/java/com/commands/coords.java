@@ -32,6 +32,8 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
+import java.util.concurrent.CompletableFuture;
+
 public class coords {
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
 
@@ -53,48 +55,49 @@ public class coords {
                                 return 0;
                             }
 
-                            try {
-                                fetch FetchInstance = new fetch();
+                            CompletableFuture.runAsync(() -> {
+                                try {
+                                    fetch FetchInstance = new fetch();
 
-                                JsonObject payload = new JsonObject();
-                                JsonArray queryArray = new JsonArray();
-                                JsonArray coordinatesArray = new JsonArray();
-                                coordinatesArray.add(x);
-                                coordinatesArray.add(z);
-                                queryArray.add(coordinatesArray);
-                                payload.add("query", queryArray);
+                                    JsonObject payload = new JsonObject();
+                                    JsonArray queryArray = new JsonArray();
+                                    JsonArray coordinatesArray = new JsonArray();
+                                    coordinatesArray.add(x);
+                                    coordinatesArray.add(z);
+                                    queryArray.add(coordinatesArray);
+                                    payload.add("query", queryArray);
 
-                                String apiUrl = "https://api.earthmc.net/v3/aurora/location";
+                                    String apiUrl = "https://api.earthmc.net/v3/aurora/location";
 
-                                JsonArray locationData = JsonParser.parseString(FetchInstance.Fetch(apiUrl, payload.toString())).getAsJsonArray();
+                                    JsonArray locationData = JsonParser.parseString(FetchInstance.Fetch(apiUrl, payload.toString())).getAsJsonArray();
 
-                                if (locationData != null && locationData.size() == 1 && locationData.get(0).isJsonObject()) {
-                                    JsonObject data = locationData.get(0).getAsJsonObject();
+                                    if (locationData != null && locationData.size() == 1 && locationData.get(0).isJsonObject()) {
+                                        JsonObject data = locationData.get(0).getAsJsonObject();
 
-                                    if (data.get("isWilderness").getAsBoolean()) {
-                                        client.player.sendMessage(Text.literal("Location is Wilderness").setStyle(Style.EMPTY.withColor(Formatting.AQUA)), false);
-                                    } else {
-                                        JsonObject town = data.has("town") ? data.get("town").getAsJsonObject() : new JsonObject();
-                                        String townName = town.has("name") ? town.get("name").getAsString() : "Unknown";
-
-                                        JsonObject nation = data.has("nation") ? data.get("nation").getAsJsonObject() : new JsonObject();
-                                        String nationName = nation.has("name") ? nation.get("name").getAsString() : null;
-
-                                        if (nationName != null) {
-                                            client.player.sendMessage(Text.literal(String.format("Location is at town %s, part of %s", townName, nationName)).setStyle(Style.EMPTY.withColor(Formatting.GREEN)), false);
+                                        if (data.get("isWilderness").getAsBoolean()) {
+                                            client.player.sendMessage(Text.literal("Location is Wilderness").setStyle(Style.EMPTY.withColor(Formatting.AQUA)), false);
                                         } else {
-                                            client.player.sendMessage(Text.literal(String.format("Location is at town %s, not part of any nation", townName)).setStyle(Style.EMPTY.withColor(Formatting.GREEN)), false);
+                                            JsonObject town = data.has("town") ? data.get("town").getAsJsonObject() : new JsonObject();
+                                            String townName = town.has("name") ? town.get("name").getAsString() : "Unknown";
+
+                                            JsonObject nation = data.has("nation") ? data.get("nation").getAsJsonObject() : new JsonObject();
+                                            String nationName = nation.has("name") ? nation.get("name").getAsString() : null;
+
+                                            if (nationName != null) {
+                                                client.player.sendMessage(Text.literal(String.format("Location is at town %s, part of %s", townName, nationName)).setStyle(Style.EMPTY.withColor(Formatting.GREEN)), false);
+                                            } else {
+                                                client.player.sendMessage(Text.literal(String.format("Location is at town %s, not part of any nation", townName)).setStyle(Style.EMPTY.withColor(Formatting.GREEN)), false);
+                                            }
                                         }
+                                    } else {
+                                        client.player.sendMessage(Text.literal("Unexpected API response format.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
                                     }
-                                } else {
-                                    client.player.sendMessage(Text.literal("Unexpected API response format.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    client.player.sendMessage(Text.literal("Command exited with an exception.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                    LOGGER.error("Command exited with an exception: " + e.getMessage());
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                client.player.sendMessage(Text.literal("Command exited with an exception.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
-                                LOGGER.error("Command exited with an exception: " + e.getMessage());
-                                return 0;
-                            }
+                            });
 
                             return 1;  // Command executed successfully
                         })
