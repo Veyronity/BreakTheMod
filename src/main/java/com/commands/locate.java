@@ -86,7 +86,7 @@ public class locate {
 
                                         String hyperlink = String.format("https://map.earthmc.net/?world=minecraft_overworld&zoom=3&x=%d&z=%d", x, z);
                                         Text message = Text.literal(String.format("%s is located at X: %d, Z: %d. ", name, x, z))
-                                            .append(Text.literal("Aurora Dynmap").formatted(Formatting.AQUA).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, hyperlink))));
+                                            .append(Text.literal("Click Here").formatted(Formatting.AQUA).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, hyperlink))));
                                         
                                         client.player.sendMessage(message, false);
                                     } else {

@@ -114,12 +114,16 @@ public class staff {
 
                             client.execute(() -> {
                                 if (!onlineStaff.isEmpty()) {
-                                    sendMessage(client, Text.of("Online staff: " + String.join(", ", onlineStaff)));
+                                    Text styledPart = Text.literal("Online staff: ").setStyle(Style.EMPTY.withColor(Formatting.AQUA));
+                                    Text onlineStaffText = Text.literal(String.join(", ", onlineStaff));
+                                    Text OnlineStaff = Text.literal(" ,number ").append(styledPart).append(String.valueOf(onlineStaff.size()));
+                                    Text message = Text.literal("").append(styledPart).append(onlineStaffText).append(OnlineStaff);
+                                    sendMessage(client, message);
                                 } else {
-                                    sendMessage(client, Text.of("No staff members are online."));
+                                    sendMessage(client, Text.literal("No staff online").setStyle(Style.EMPTY.withColor(Formatting.DARK_RED)));
                                 }
                             });
-
+                            
                         } catch (Exception e) {
                             e.printStackTrace();
                             client.execute(() -> sendMessage(client, Text.literal("Command has exited with an exception").setStyle(Style.EMPTY.withColor(Formatting.RED))));
