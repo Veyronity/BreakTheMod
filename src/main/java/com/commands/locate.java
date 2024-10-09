@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import com.mojang.brigadier.arguments.StringArgumentType;
-
 import java.util.concurrent.CompletableFuture;
 
 public class locate {

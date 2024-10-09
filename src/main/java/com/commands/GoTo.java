@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import com.mojang.brigadier.arguments.StringArgumentType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -62,7 +61,7 @@ public class GoTo {
         CompletableFuture.runAsync(() -> {
             try {
                 int radius = 500;
-                int maxAttempts = 5;
+                int maxAttempts = 3;
                 
 
                 while (maxAttempts > 0) {
@@ -104,12 +103,11 @@ public class GoTo {
                     for (JsonElement townDetailElement : townDetailsArray) {
                         JsonObject townDetail = townDetailElement.getAsJsonObject();
                         JsonObject status = townDetail.get("status").getAsJsonObject();
-
+                        LOGGER.debug(status.getAsString());
                         if (status.get("isPublic").getAsBoolean() && status.get("canOutsidersSpawn").getAsBoolean()) {
                             validTowns.add(townDetail);
 
                         } else if (status.get("isCapital").getAsBoolean()) {
-                            // Handle capital towns
                             String nationUuid = townDetail.get("nation").getAsJsonObject().get("uuid").getAsString();
                             JsonObject nationDetailsPayload = new JsonObject();
                             JsonArray nationQueryArray = new JsonArray();

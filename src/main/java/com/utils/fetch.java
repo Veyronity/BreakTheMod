@@ -24,9 +24,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class fetch {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
+    
     /**
      * Sends an HTTP POST request with the provided URL and JSON payload and returns the response as a JsonObject.
      * @param url the URL to send the request to
@@ -49,14 +53,12 @@ public class fetch {
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Log or inspect response for debugging
         String responseBody = response.body();
-
-        // Try parsing the response in lenient mode
         try (JsonReader reader = new JsonReader(new StringReader(responseBody))) {
             reader.setLenient(true);
             return responseBody;
         } catch (JsonSyntaxException e) {
+            LOGGER.debug("Failed to parse JSON. Response body: " + responseBody, e);
             throw new Exception("Failed to parse JSON. Response body: " + responseBody, e);
         }
     }

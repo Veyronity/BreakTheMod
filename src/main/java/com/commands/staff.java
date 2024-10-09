@@ -25,14 +25,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
@@ -116,8 +113,7 @@ public class staff {
                                 if (!onlineStaff.isEmpty()) {
                                     Text styledPart = Text.literal("Online staff: ").setStyle(Style.EMPTY.withColor(Formatting.AQUA));
                                     Text onlineStaffText = Text.literal(String.join(", ", onlineStaff));
-                                    Text OnlineStaff = Text.literal(" ,number ").append(styledPart).append(String.valueOf(onlineStaff.size()));
-                                    Text message = Text.literal("").append(styledPart).append(onlineStaffText).append(OnlineStaff);
+                                    Text message = Text.literal("").append(styledPart).append(onlineStaffText).append(", [").append(String.valueOf(onlineStaff.size())).append("]");
                                     sendMessage(client, message);
                                 } else {
                                     sendMessage(client, Text.literal("No staff online").setStyle(Style.EMPTY.withColor(Formatting.DARK_RED)));
