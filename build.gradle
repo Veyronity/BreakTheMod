@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'fabric-loom' version '1.8.1'
     id 'maven-publish'
 }
 
@@ -15,6 +15,7 @@ repositories {
         url 'https://maven.fabricmc.net/'
     }
     mavenCentral()
+    mavenLocal()
 }
 
 
@@ -24,6 +25,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "com.mojang:brigadier:${project.brigadier}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation 'javax.websocket:javax.websocket-api:1.1'
 
 }
 

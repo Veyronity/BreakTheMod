@@ -1,0 +1,7 @@
+{
+    "scripts": {
+        "cleanbuild": "gradle clean build --refresh-dependencies",
+        "build": "gradle build --refresh-dependencies",
+        "beta": "gradle runClient"
+    }
+}
