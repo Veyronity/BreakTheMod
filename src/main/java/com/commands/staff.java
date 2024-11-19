@@ -19,7 +19,7 @@
 package com.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.utils.fetch;
+import com.utils.*;
 import com.google.gson.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Style;
@@ -137,7 +137,9 @@ public class staff {
     private static void sendMessage(MinecraftClient client, Text message) {
         client.execute(() -> {
             if (client.player != null) {
-                client.player.sendMessage(message, false);
+                Text prefix = Prefix.getPrefix();
+                Text chatMessage = Text.literal("").append(prefix).append(message);
+                client.player.sendMessage(chatMessage, false);
             }
         });
     }

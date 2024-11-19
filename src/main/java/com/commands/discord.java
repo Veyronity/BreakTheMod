@@ -21,6 +21,7 @@ package com.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.utils.Prefix;
 import com.utils.fetch;
 import com.google.gson.*;
 import net.minecraft.client.MinecraftClient;
@@ -87,21 +88,20 @@ public class discord {
                                         JsonObject discordData = earthMCData.get(0).getAsJsonObject();
                                         String discordID = discordData.get("id").getAsString();
 
-                                        // Send result to player
                                         client.execute(() -> {
                                             Text result = Text.literal("Discord info for Username '" + username + "':\n")
                                                 .append(Text.literal("Discord ID: " + discordID).setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
                                             client.player.sendMessage(result, false);
                                         });
                                     } else {
-                                        client.execute(() -> client.player.sendMessage(Text.literal("No Discord ID linked with the provided Minecraft username.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false));
+                                        client.execute(() -> sendMessage(client,Text.literal("No Discord ID linked with the provided Minecraft username.").setStyle(Style.EMPTY.withColor(Formatting.RED))));
                                     }
                                 } else {
-                                    client.execute(() -> client.player.sendMessage(Text.literal("Error: Invalid Minecraft UUID format.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false));
+                                    client.execute(() -> sendMessage(client,Text.literal("Error: Invalid Minecraft UUID format.").setStyle(Style.EMPTY.withColor(Formatting.RED))));
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                client.execute(() -> client.player.sendMessage(Text.literal("An error occurred while processing the command.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false));
+                                client.execute(() -> sendMessage(client,Text.literal("An error occurred while processing the command.").setStyle(Style.EMPTY.withColor(Formatting.RED))));
                                 LOGGER.error("Command has exited with an exception: " + e.getMessage());
                             }
                         });
@@ -113,4 +113,14 @@ public class discord {
             dispatcher.register(command);
         });
     }
+    private static void sendMessage(MinecraftClient client, Text message) {
+        client.execute(() -> {
+            if (client.player != null) {
+                Text prefix = Prefix.getPrefix();
+                Text chatMessage = Text.literal("").append(prefix).append(message);
+                client.player.sendMessage(chatMessage, false);
+            }
+        });
+    }
+
 }

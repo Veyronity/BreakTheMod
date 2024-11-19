@@ -20,6 +20,7 @@ package com.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.utils.Prefix;
 import com.utils.fetch;
 import com.utils.timestamps;
 import com.google.gson.*;
@@ -84,11 +85,15 @@ public class lastSeen {
                                 if (!online.getAsBoolean()) {
                                     statusMessage = String.format("%s has been offline for %d days, %d hours, and %d minutes.", username, offlineDate.get(0), offlineDate.get(1), offlineDate.get(2));
                                     Text formattedMessage = Text.literal(statusMessage).formatted(Formatting.RED);
-                                    client.player.sendMessage(formattedMessage, false);
+                                    client.execute(()->{
+                                        sendMessage(client, formattedMessage);
+                                    });
                                 } else {
                                     statusMessage = String.format("%s is currently online, for %d days, %d hours, and %d minutes.", username, offlineDate.get(0), offlineDate.get(1), offlineDate.get(2));
                                     Text formattedMessage = Text.literal(statusMessage).formatted(Formatting.GREEN);
-                                    client.player.sendMessage(formattedMessage, false);
+                                    client.execute(()->{
+                                        sendMessage(client, formattedMessage);
+                                    });
                                 }
 
                             } catch (Exception e) {
@@ -103,6 +108,15 @@ public class lastSeen {
                 );
 
             dispatcher.register(command);
+        });
+    }
+    private static void sendMessage(MinecraftClient client, Text message) {
+        client.execute(() -> {
+            if (client.player != null) {
+                Text prefix = Prefix.getPrefix();
+                Text chatMessage = Text.literal("").append(prefix).append(message);
+                client.player.sendMessage(chatMessage, false);
+            }
         });
     }
 }

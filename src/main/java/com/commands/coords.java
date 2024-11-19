@@ -20,6 +20,7 @@ package com.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.utils.Prefix;
 import com.utils.fetch;
 import com.google.gson.*;
 import net.minecraft.client.MinecraftClient;
@@ -84,17 +85,25 @@ public class coords {
                                             String nationName = nation.has("name") ? nation.get("name").getAsString() : null;
 
                                             if (nationName != null) {
-                                                client.player.sendMessage(Text.literal(String.format("Location is at town %s, part of %s", townName, nationName)).setStyle(Style.EMPTY.withColor(Formatting.GREEN)), false);
+                                                client.execute(()->{
+                                                    sendMessage(client,Text.literal(String.format("Location is at town %s, part of %s", townName, nationName)).setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+                                                });
                                             } else {
-                                                client.player.sendMessage(Text.literal(String.format("Location is at town %s, not part of any nation", townName)).setStyle(Style.EMPTY.withColor(Formatting.GREEN)), false);
+                                                client.execute(()->{
+                                                    sendMessage(client,Text.literal(String.format("Location is at town %s, not part of any nation", townName)).setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+                                                });
                                             }
                                         }
                                     } else {
-                                        client.player.sendMessage(Text.literal("Unexpected API response format.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                        client.execute(()->{
+                                            sendMessage(client,Text.literal("Unexpected API response format.").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+                                        });
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    client.player.sendMessage(Text.literal("Command exited with an exception.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                    client.execute(()->{
+                                        sendMessage(client, Text.literal("Command exited with an exception.").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+                                    });
                                     LOGGER.error("Command exited with an exception: " + e.getMessage());
                                 }
                             });
@@ -105,6 +114,15 @@ public class coords {
                 );
 
             dispatcher.register(command);
+        });
+    }
+    private static void sendMessage(MinecraftClient client, Text message) {
+        client.execute(() -> {
+            if (client.player != null) {
+                Text prefix = Prefix.getPrefix();
+                Text chatMessage = Text.literal("").append(prefix).append(message);
+                client.player.sendMessage(chatMessage, false);
+            }
         });
     }
 }

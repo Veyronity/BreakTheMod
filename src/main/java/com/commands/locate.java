@@ -20,7 +20,7 @@
 package com.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.utils.fetch;
+import com.utils.*;
 import com.google.gson.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
@@ -87,9 +87,14 @@ public class locate {
                                         Text message = Text.literal(String.format("%s is located at X: %d, Z: %d. ", name, x, z))
                                             .append(Text.literal("Click Here").formatted(Formatting.AQUA).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, hyperlink))));
                                         
-                                        client.player.sendMessage(message, false);
+                                        client.execute(()->{
+                                            sendMessage(client, message);
+                                        });
+
                                     } else {
-                                        client.player.sendMessage(Text.literal("Location not found.").setStyle(Style.EMPTY.withColor(Formatting.RED)), false);
+                                        client.execute(()->{
+                                            sendMessage(client, Text.literal("Location not found.").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+                                        });
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -104,6 +109,15 @@ public class locate {
                 );
 
             dispatcher.register(command);
+        });
+    }
+    private static void sendMessage(MinecraftClient client, Text message) {
+        client.execute(() -> {
+            if (client.player != null) {
+                Text prefix = Prefix.getPrefix();
+                Text chatMessage = Text.literal("").append(prefix).append(message);
+                client.player.sendMessage(chatMessage, false);
+            }
         });
     }
 }

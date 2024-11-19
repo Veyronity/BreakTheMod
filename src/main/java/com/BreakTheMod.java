@@ -35,7 +35,7 @@ public class BreakTheMod implements ClientModInitializer {
 
         if (client != null) {
             LOGGER.info("Initializing client commands.");
-            staff.register();
+            nearby.register();
             lastSeen.register();
             locate.register();
             coords.register();

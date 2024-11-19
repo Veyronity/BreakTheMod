@@ -63,3 +63,9 @@ jar {
 }
 
 
+sourceSets {
+  main {
+    java {
+    }
+  }
+}
