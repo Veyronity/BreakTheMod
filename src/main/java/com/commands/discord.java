@@ -27,12 +27,15 @@ import com.google.gson.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import java.util.concurrent.CompletableFuture;
+
+
 
 public class discord {
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
@@ -54,55 +57,68 @@ public class discord {
 
                         fetch Fetch = new fetch();
 
+                        // Async task for processing
                         CompletableFuture.runAsync(() -> {
                             try {
-                                String mojangResponse = Fetch.Fetch("https://api.mojang.com/users/profiles/minecraft/" + username, null);
+                                // Fetch Mojang data
+                                String mojangResponse = Fetch.Fetch(
+                                    "https://api.mojang.com/users/profiles/minecraft/" + username, 
+                                    null
+                                );
                                 JsonObject mojangData = JsonParser.parseString(mojangResponse).getAsJsonObject();
-
                                 String minecraftUUID = mojangData.get("id").getAsString();
-                                JsonArray formattedUUID = new JsonArray();
-                                
-                                formattedUUID.add(minecraftUUID.substring(0, 8) + "-" + minecraftUUID.substring(8, 12) + "-" 
-                                + minecraftUUID.substring(12, 16) + "-" + minecraftUUID.substring(16, 20) + "-" 
-                                + minecraftUUID.substring(20));
+                                String formattedUUID = minecraftUUID.substring(0, 8) + "-" + minecraftUUID.substring(8, 12) + "-" 
+                                    + minecraftUUID.substring(12, 16) + "-" + minecraftUUID.substring(16, 20) + "-" 
+                                    + minecraftUUID.substring(20);
 
+                                if (!formattedUUID.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) {
+                                    client.execute(() -> sendMessage(client, Text.literal("Error: Invalid Minecraft UUID format.")
+                                        .setStyle(Style.EMPTY.withColor(Formatting.RED))));
+                                    return;
+                                }
 
-                                if (formattedUUID.get(0).getAsString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) {
+                                // Prepare EarthMC query
+                                JsonObject payload = new JsonObject();
+                                JsonArray queryArray = new JsonArray();
+                                JsonObject queryItem = new JsonObject();
 
-                                    JsonObject payload = new JsonObject();
-                                    JsonArray Minecraft = new JsonArray();
-                                    JsonObject type = new JsonObject();
+                                queryItem.addProperty("type", "minecraft");
+                                queryItem.addProperty("target", formattedUUID);
 
-                                    type.addProperty("type","minecraft");
-                                    type.addProperty("target", formattedUUID.get(0).getAsString());
+                                queryArray.add(queryItem);
+                                payload.add("query", queryArray);
 
-                                    Minecraft.add(type);
-                                    
+                                // Fetch EarthMC data
+                                String emcResponse = Fetch.Fetch(
+                                    "https://api.earthmc.net/v3/aurora/discord?query=", 
+                                    payload.toString()
+                                );
+                                JsonArray earthMCData = JsonParser.parseString(emcResponse).getAsJsonArray();
 
-                                    payload.add("query", Minecraft);
-                                    String emcResponse = Fetch.Fetch("https://api.earthmc.net/v3/aurora/discord?query=", payload.toString());
+                                if (earthMCData.size() > 0) {
+                                    JsonObject discordData = earthMCData.get(0).getAsJsonObject();
+                                    String discordID = discordData.get("id").getAsString();
 
-                                    JsonArray earthMCData = JsonParser.parseString(emcResponse).getAsJsonArray();
+                                    // Build and send success message
+                                    client.execute(() -> {
+                                        Text result = Text.literal("Click Here")
+                                                .setStyle(Style.EMPTY
+                                                .withColor(Formatting.BLUE)
+                                                .withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.com/users/" + discordID)
+                                                )
 
-                                    if (earthMCData.size() > 0) {
-                                        JsonObject discordData = earthMCData.get(0).getAsJsonObject();
-                                        String discordID = discordData.get("id").getAsString();
-
-                                        client.execute(() -> {
-                                            Text result = Text.literal("Discord info for Username '" + username + "':\n")
-                                                .append(Text.literal("Discord ID: " + discordID).setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
-                                            client.player.sendMessage(result, false);
-                                        });
-                                    } else {
-                                        client.execute(() -> sendMessage(client,Text.literal("No Discord ID linked with the provided Minecraft username.").setStyle(Style.EMPTY.withColor(Formatting.RED))));
-                                    }
+                                        );
+                                        client.player.sendMessage(result, false);
+                                    });
                                 } else {
-                                    client.execute(() -> sendMessage(client,Text.literal("Error: Invalid Minecraft UUID format.").setStyle(Style.EMPTY.withColor(Formatting.RED))));
+                                    client.execute(() -> sendMessage(client, Text.literal("No Discord ID linked with the provided Minecraft username.")
+                                        .setStyle(Style.EMPTY.withColor(Formatting.RED))));
                                 }
                             } catch (Exception e) {
-                                e.printStackTrace();
-                                client.execute(() -> sendMessage(client,Text.literal("An error occurred while processing the command.").setStyle(Style.EMPTY.withColor(Formatting.RED))));
                                 LOGGER.error("Command has exited with an exception: " + e.getMessage());
+                                client.execute(() -> sendMessage(client, Text.literal("An error occurred while processing the command.")
+                                    .setStyle(Style.EMPTY.withColor(Formatting.RED))));
                             }
                         });
 
@@ -113,6 +129,7 @@ public class discord {
             dispatcher.register(command);
         });
     }
+
     private static void sendMessage(MinecraftClient client, Text message) {
         client.execute(() -> {
             if (client.player != null) {
@@ -122,5 +139,4 @@ public class discord {
             }
         });
     }
-
 }

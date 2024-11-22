@@ -23,9 +23,8 @@ import com.utils.fetch;
 import com.google.gson.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.text.Style;
+import net.minecraft.text.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -56,43 +55,62 @@ public class nearby {
 
                     CompletableFuture.runAsync(() -> {
                         try {
-                            List<PlayerEntity> players = new ArrayList<>();
+                            List<String> playerInfoList = new ArrayList<>();
+                            Vec3d playerPos = client.player.getPos();
+                            
 
-                            // Fetching players who are not under a full block above them
                             for (Entity entity : client.world.getEntities()) {
-                                if (entity instanceof PlayerEntity) {
-                                    PlayerEntity player = (PlayerEntity) entity;
-                                    BlockPos playerPos = player.getBlockPos();
-                                    BlockPos blockAbovePos = playerPos.up(2);  // Get the block 2 positions up (above the player's head)
-                                    BlockState blockStateAbove = player.getWorld().getBlockState(blockAbovePos);  // Use getWorld() instead of world
-                                    
-                                    boolean isUnderFullBlock = blockStateAbove.isOpaqueFullCube(player.getWorld(), blockAbovePos);
+
+                                if (entity instanceof PlayerEntity && entity != client.player) {
+                                    PlayerEntity otherPlayer = (PlayerEntity) entity;
+                                    if (otherPlayer.isInvisible()) {
+                                        return; 
+                                    }
+                                    Vec3d otherPlayerPos = otherPlayer.getPos();
+                                    BlockPos playerBlockPos = new BlockPos(
+                                        (int) Math.floor(otherPlayerPos.getX()),
+                                        (int) Math.floor(otherPlayerPos.getY()),
+                                        (int) Math.floor(otherPlayerPos.getZ())
+                                    );
                                 
-                                    if (!isUnderFullBlock) {
-                                        players.add(player);
+                                    boolean isUnderAnyBlock = false;
+                                    for (int y = playerBlockPos.getY() + 1; y <= client.world.getTopY(); y++) { // Loop from player's head to world top
+                                        BlockPos checkPos = new BlockPos(playerBlockPos.getX(), y, playerBlockPos.getZ());
+                                        BlockState blockStateAbove = client.world.getBlockState(checkPos);
+                                
+                                        if (!blockStateAbove.isAir()) { // If there is a block
+                                            isUnderAnyBlock = true;
+                                            break;
+                                        }
+                                    }
+                                
+                                    if (!isUnderAnyBlock) { // Only add players without blocks above them
+                                        double distance = client.player.getPos().distanceTo(otherPlayerPos);
+                                        String otherPlayerName = otherPlayer.getName().getString();
+                                        int x = (int) otherPlayerPos.getX();
+                                        int z = (int) otherPlayerPos.getZ();
+                                
+                                        playerInfoList.add(String.format("- %s (%d, %d) distance: %.1f blocks",
+                                            otherPlayerName, x, z, distance));
                                     }
                                 }
+                                
+                                
                             }
 
-                            if (players.isEmpty()) {
-                                // No players found
+                            if (playerInfoList.isEmpty()) {
                                 client.execute(() -> sendMessage(client, Text.literal("There are no players nearby").setStyle(Style.EMPTY.withColor(Formatting.RED))));
                                 return;
                             }
 
-                            JsonArray playerData = new JsonArray();
-                            for (PlayerEntity player : players) {
-                                JsonObject playerInfo = new JsonObject();
-                                playerInfo.addProperty("name", player.getName().getString()); // Add player name
-                                playerInfo.addProperty("x", player.getX()); // X coordinate
-                                playerInfo.addProperty("y", player.getY()); // Y coordinate
-                                playerInfo.addProperty("z", player.getZ()); // Z coordinate
+                            MutableText header = Text.literal("Players nearby:\n").setStyle(Style.EMPTY.withColor(Formatting.YELLOW));
+                            MutableText playersText = Text.literal("");
 
-                                playerData.add(playerInfo);
+                            for (String playerInfo : playerInfoList) {
+                                playersText.append(Text.literal(playerInfo + "\n").setStyle(Style.EMPTY.withColor(Formatting.AQUA)));
                             }
 
-                            // Send message with the list of players
-                            client.execute(() -> sendMessage(client, Text.literal("Players nearby: " + playerData.toString()).setStyle(Style.EMPTY.withColor(Formatting.RED))));
+                            client.execute(() -> sendMessage(client, header.append(playersText)));
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -107,7 +125,6 @@ public class nearby {
             dispatcher.register(command);  
         });
     }
-
     private static void sendMessage(MinecraftClient client, Text message) {
         client.execute(() -> {
             if (client.player != null) {

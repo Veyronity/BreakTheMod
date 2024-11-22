@@ -111,7 +111,7 @@ public class staff {
 
                             client.execute(() -> {
                                 if (!onlineStaff.isEmpty()) {
-                                    Text styledPart = Text.literal("Online staff: ").setStyle(Style.EMPTY.withColor(Formatting.AQUA));
+                                    Text styledPart = Text.literal("").setStyle(Style.EMPTY.withColor(Formatting.AQUA));
                                     Text onlineStaffText = Text.literal(String.join(", ", onlineStaff));
                                     Text message = Text.literal("").append(styledPart).append(onlineStaffText).append(", [").append(String.valueOf(onlineStaff.size())).append("]");
                                     sendMessage(client, message);
