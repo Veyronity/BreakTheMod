@@ -35,7 +35,7 @@ public class fetch {
      * Sends an HTTP POST request with the provided URL and JSON payload and returns the response as a [String].
      * @param url the URL to send the request to
      * @param jsonPayload the JSON payload to include in the request body
-     * @return the response body as a JsonObject
+     * @return the response body as Strings
      * @throws Exception It covers all possible exceptions
      */
     public String Fetch(String url, String payload) throws Exception {

@@ -6,4 +6,4 @@ modId="breakthemod"
 version="1.0.0"
 displayName="BreakTheMod"
 description="Mod version of breakthebot."
-logoFile="resources/assets/icon.png"  # Path to the icon relative to the JAR root
+logoFile="assets/icon.png"  # Path to the icon relative to the JAR root

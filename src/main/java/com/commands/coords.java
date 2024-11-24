@@ -33,6 +33,8 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import java.util.concurrent.CompletableFuture;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+
 
 public class coords {
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
@@ -42,12 +44,12 @@ public class coords {
             LiteralArgumentBuilder<FabricClientCommandSource> command = LiteralArgumentBuilder
                 .<FabricClientCommandSource>literal("coords")
                 .then(RequiredArgumentBuilder
-                    .<FabricClientCommandSource, Integer>argument("x", IntegerArgumentType.integer())
+                    .<FabricClientCommandSource, Double>argument("x", DoubleArgumentType.doubleArg())
                     .then(RequiredArgumentBuilder
-                        .<FabricClientCommandSource, Integer>argument("z", IntegerArgumentType.integer())
+                        .<FabricClientCommandSource, Double>argument("z", DoubleArgumentType.doubleArg())
                         .executes(context -> {
-                            int x = IntegerArgumentType.getInteger(context, "x");
-                            int z = IntegerArgumentType.getInteger(context, "z");
+                            double x = DoubleArgumentType.getDouble(context, "x");
+                            double z = DoubleArgumentType.getDouble(context, "z");
                             MinecraftClient client = MinecraftClient.getInstance();
 
                             if (client.player == null) {
@@ -76,7 +78,7 @@ public class coords {
                                         JsonObject data = locationData.get(0).getAsJsonObject();
 
                                         if (data.get("isWilderness").getAsBoolean()) {
-                                            client.player.sendMessage(Text.literal("Location is Wilderness").setStyle(Style.EMPTY.withColor(Formatting.AQUA)), false);
+                                            sendMessage(client,Text.literal("Location is Wilderness").setStyle(Style.EMPTY.withColor(Formatting.AQUA)));
                                         } else {
                                             JsonObject town = data.has("town") ? data.get("town").getAsJsonObject() : new JsonObject();
                                             String townName = town.has("name") ? town.get("name").getAsString() : "Unknown";

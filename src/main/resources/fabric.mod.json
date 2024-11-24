@@ -9,11 +9,21 @@
 	],
 	"contact": {
 		"project": "https://github.com/Veyronity/BreakTheMod",
-		"author": "https://github.com/chariskar"
+		"author": "https://github.com/chariskar",
+		"discord": "https://discord.gg/RVkwSrPyuq"
 	},
-	"license": "AGPL-V3",
-	"icon": "./assets/icon.png",
-	"environment": "*",
+	"license": "AGPLV3",
+	"icon": "assets/icon.png",
+	"environment": "client",
+	"custom": {
+		"modmenu": {
+		  "links": {
+			"modmenu.discord": "https://discord.gg/RVkwSrPyuq",
+			"modmenu.modrinth": "https://modrinth.com/mod/BreakTheMod",
+			"modmenu.github_releases": "https://github.com/Veyronity/BreakTheMod/releases"
+		  }
+		}
+	  },
 	"entrypoints": {
 		"client": [
 			"com.BreakTheMod"

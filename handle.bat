@@ -30,10 +30,8 @@ goto loop
 :: Handle "run" and "build"
 if "%ACTION%"=="build" (
     echo Running Gradle build with arguments: %OTHER_ARGS%
-    gradle clean build %OTHER_ARGS% 2>> %LOG_FILE%
-    if errorlevel 1 (
-        echo Gradle build failed. Check %LOG_FILE% for details.
-    )
+    gradle clean build %OTHER_ARGS% 
+    
     exit /b
 )
 
