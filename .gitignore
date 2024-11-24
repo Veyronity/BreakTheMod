@@ -43,8 +43,7 @@ libs
 test.ts
 .gitignore
 
-src/main/java/com/commands/GoTo.java
-src/main/java/com/commands/GoTo.java
+
 .env
 buid/
 *.log
