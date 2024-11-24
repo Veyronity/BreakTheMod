@@ -32,7 +32,7 @@ public class fetch {
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
     
     /**
-     * Sends an HTTP POST request with the provided URL and JSON payload and returns the response as a JsonObject.
+     * Sends an HTTP POST request with the provided URL and JSON payload and returns the response as a [String].
      * @param url the URL to send the request to
      * @param jsonPayload the JSON payload to include in the request body
      * @return the response body as a JsonObject
@@ -50,6 +50,7 @@ public class fetch {
             requestBuilder.GET();
         }
 
+
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -58,7 +59,7 @@ public class fetch {
             reader.setLenient(true);
             return responseBody;
         } catch (JsonSyntaxException e) {
-            LOGGER.debug("Failed to parse JSON. Response body: " + responseBody, e);
+            LOGGER.error("Failed to parse JSON. Response body: " + responseBody, e);
             throw new Exception("Failed to parse JSON. Response body: " + responseBody, e);
         }
     }

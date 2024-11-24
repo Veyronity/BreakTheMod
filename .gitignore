@@ -48,3 +48,4 @@ src/main/java/com/commands/GoTo.java
 .env
 buid/
 *.log
+safe_builds

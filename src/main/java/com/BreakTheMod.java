@@ -41,6 +41,7 @@ public class BreakTheMod implements ClientModInitializer {
             coords.register();
             discord.register();
             staff.register();
+            townless.register();
             LOGGER.debug("breakthemod Initialised");
         } else {
             LOGGER.error("Minecraft client instance is null, cannot initialize commands.");

@@ -19,8 +19,6 @@
 package com.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.utils.fetch;
-import com.google.gson.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Formatting;
@@ -56,16 +54,16 @@ public class nearby {
                     CompletableFuture.runAsync(() -> {
                         try {
                             List<String> playerInfoList = new ArrayList<>();
-                            Vec3d playerPos = client.player.getPos();
                             
 
                             for (Entity entity : client.world.getEntities()) {
 
-                                if (entity instanceof PlayerEntity && entity != client.player) {
+                                if (entity instanceof PlayerEntity && entity != client.player  ) {
                                     PlayerEntity otherPlayer = (PlayerEntity) entity;
                                     if (otherPlayer.isInvisible()) {
                                         return; 
                                     }
+
                                     Vec3d otherPlayerPos = otherPlayer.getPos();
                                     BlockPos playerBlockPos = new BlockPos(
                                         (int) Math.floor(otherPlayerPos.getX()),
@@ -94,8 +92,7 @@ public class nearby {
                                             otherPlayerName, x, z, distance));
                                     }
                                 }
-                                
-                                
+
                             }
 
                             if (playerInfoList.isEmpty()) {
@@ -134,4 +131,5 @@ public class nearby {
             }
         });
     }
+     
 }
