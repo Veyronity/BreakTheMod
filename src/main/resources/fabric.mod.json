@@ -12,7 +12,7 @@
 		"author": "https://github.com/chariskar",
 		"discord": "https://discord.gg/RVkwSrPyuq"
 	},
-	"license": "AGPLV3",
+	"license": "GPLV3",
 	"icon": "assets/icon.png",
 	"environment": "client",
 	"custom": {

@@ -1,6 +1,6 @@
 modLoader="fabric"
 loaderVersion="[>=0.16.5)"
-license="AGPLV-3"
+license="GPLV-3"
 [[mods]]
 modId="breakthemod"
 version="1.0.0"
