@@ -81,7 +81,7 @@ public class townless {
                         
                             // Process any remaining players
                             if (!batch.isEmpty()) {
-                                payload.add("payload", buildJsonArray(batch));
+                                payload.add("query", buildJsonArray(batch));
                                 List<String> Processedbatch = processBatch(payload);
                                 for (String User: Processedbatch){
                                     townless.add(User);
@@ -89,9 +89,7 @@ public class townless {
                             }
                         
                             if (townless.isEmpty()) {
-                                LOGGER.debug("No online townless users");
                             }
-                            LOGGER.debug("Townless users",townless);
                                                 
                         client.execute(()->{
                             sendMessage(client, Text.literal("Townless Users:"+townless));

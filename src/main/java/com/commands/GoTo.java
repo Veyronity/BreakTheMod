@@ -82,10 +82,8 @@ public class GoTo {
                     String UnparsedResponse = fetchInstance.Fetch(apiUrl, payload.toString());
                     JsonArray response = JsonParser.parseString(UnparsedResponse).getAsJsonArray().get(0).getAsJsonArray();
     
-                    List<JsonObject> validTowns = new ArrayList<>();
+                    List<String> validTowns = new ArrayList<>();
                     JsonArray towns = new JsonArray();
-                    Integer j = 0;
-
                     for (JsonElement element : response) {
                         JsonObject town = element.getAsJsonObject();
                         String townNameFromResponse = town.get("name").getAsString(); 
@@ -94,19 +92,19 @@ public class GoTo {
     
                     JsonObject townDetailsPayload = new JsonObject();
                     townDetailsPayload.add("query", towns);
-    
+                    JsonObject template = new JsonObject();
+                    template.addProperty("name",true);
+                    template.addProperty("status",true);
+                    townDetailsPayload.add("template", template);
                     String townDetailsUrl = "https://api.earthmc.net/v3/aurora/towns/";
                     String townDetailsResponse = fetchInstance.Fetch(townDetailsUrl, townDetailsPayload.toString());
                     JsonArray townDetailsArray = JsonParser.parseString(townDetailsResponse).getAsJsonArray();
-    
+
                     for (JsonElement townDetailElement : townDetailsArray) {
                         JsonObject townDetail = townDetailElement.getAsJsonObject();
-                        LOGGER.debug("Towns", townDetail.toString());
                         JsonObject status = townDetail.get("status").getAsJsonObject();
-                        LOGGER.debug("Data recieved", townDetail.toString());
                         if (status.get("isPublic").getAsBoolean() && status.get("canOutsidersSpawn").getAsBoolean()) {
-                            validTowns.add(townDetail);
-
+                            validTowns.add(townDetail.get("name").getAsString());
                         } else if (status.get("isCapital").getAsBoolean()) {
                             String nationUuid = townDetail.get("nation").getAsJsonObject().get("uuid").getAsString();
                             JsonObject nationDetailsPayload = new JsonObject();
@@ -118,20 +116,19 @@ public class GoTo {
                             JsonObject nationDetails = JsonParser.parseString(fetchInstance.Fetch(nationDetailsUrl, nationDetailsPayload.toString())).getAsJsonObject();
     
                             if (nationDetails.has("isPublic") && nationDetails.get("status").getAsJsonObject().get("isPublic").getAsBoolean()) {
-                                validTowns.add(townDetail);
+                                validTowns.add(townDetail.get("name").getAsString());
                             }
                         }
                     }
     
                     if (validTowns.size() >= 1) {
-                        for (JsonObject validTown : validTowns) {
-                            client.execute(()->{
-                                sendMessage(
-                                    client,
-                                    Text.literal( "Found suitable spawn in: " + validTown.toString()).setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
-                            });
+                        client.execute(()->{
+                            sendMessage(
+                                client,
+                                Text.literal( "Found suitable spawn in: " + validTowns.toString()).setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+                        });
                             
-                        }
+                        
                         return;
                     }
     
