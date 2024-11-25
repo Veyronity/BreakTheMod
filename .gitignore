@@ -48,3 +48,4 @@ test.ts
 buid/
 *.log
 safe_builds
+handle.bat

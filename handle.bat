@@ -43,7 +43,11 @@ if "%ACTION%"=="run" (
     )
     exit /b
 )
-
+if "%ACTION%" == "sign" (
+    echo Signing jar
+    jarsigner -keystore /Users/chari/keystore.jks -storepass 071210 -keypass 071210 -signedjar signed-file.jar build/libs/breakthemod-1.0.0.jar Charis -tsa http://timestamp.digicert.com
+    exit /b
+)
 :: Default case
 echo Invalid action: %ACTION%
 echo Invalid action: %ACTION% >> %LOG_FILE%

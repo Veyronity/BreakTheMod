@@ -30,11 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import com.mojang.brigadier.arguments.StringArgumentType;
-
-import java.rmi.StubNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 public class help {
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
