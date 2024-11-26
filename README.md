@@ -11,7 +11,7 @@
 List the key features of your mod. Use bullet points to make it scannable. Optionally, include images or GIFs.
 
 - WhereIs: It tells you where a player is based on the map api.  
-- Nearby: It tellsy ou where players are in the rendered chunks, if they are would be visible on the map ofcourse  
+- Nearby: It tellsy ou where players are in the rendered chunks, if they would be visible on the map ofcourse  
 
 ---
 
@@ -45,13 +45,13 @@ List the key features of your mod. Use bullet points to make it scannable. Optio
 > 2. Make your changes in a feature branch.  
 > 3. Submit a pull request.  
 
-Review the [CONTRIBUTING.md](/CONTRIBUTING.md) for more details.
+Review [CONTRIBUTING.md](/CONTRIBUTING.md) for more details.
 
 ---
 
 ## **Credits**
 > - Developed by 
-> - Thanks to Veyronity
+> - Special thanks to Veyronity
 
 ---
 
@@ -62,7 +62,7 @@ Review the [CONTRIBUTING.md](/CONTRIBUTING.md) for more details.
 ---
 
 ## **Links**
-- [Download]()
+- [Download](https://modrinth.com/mod/breakthemod/)
 - [Discord Server](https://discord.gg/RVkwSrPyuq) 
 
 ---

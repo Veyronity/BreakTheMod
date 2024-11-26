@@ -12,17 +12,15 @@ Here are some ways you can contribute:
 1. **Reporting Issues**  
    - Found a bug? Submit it to the [Issues tab]().  
    - Include details like:  
-     - Minecraft version  
-     - Mod loader and version (Forge/Fabric)  
      - Steps to reproduce the issue  
      - Crash logs or screenshots (if applicable)
 
 2. **Suggesting Features**  
-   - Have an idea to improve the mod? Open a feature request in the [Issues tab](link-to-issues).
+   - Have an idea to improve the mod? Open a feature request in the [Issues tab](https://github.com/Veyronity/BreakTheMod/issues) under the idea label.
 
 3. **Coding**  
    - Fix bugs or add features by submitting pull requests (PRs).  
-   - Check the [Issues tab](link-to-issues) for tasks labeled `trige-needed`.
+   - Check the [Issues tab](https://github.com/Veyronity/BreakTheMod/issues) for tasks labeled `triage-needed`.
 
 4. **Documentation**  
    - Help improve the mod's documentation by editing the README, adding usage guides, or contributing to the wiki.
@@ -62,7 +60,6 @@ Here are some ways you can contribute:
 ### **Branching**
 - **Main branch:** For stable, production-ready releases.  
 - **Development branch:** For in-progress features and bug fixes.  
-
 ### **Pull Requests**
 - Create a feature branch for your work:  
    ```bash
@@ -93,14 +90,11 @@ Here are some ways you can contribute:
 
 - Be respectful and constructive in discussions.  
 - Avoid spamming or submitting low-quality contributions.  
-- Follow the [Code of Conduct](link-to-code-of-conduct) (if applicable).  
 
 ---
 
 ## **Need Help?**
 If you have questions, feel free to:  
-- Open a discussion in the [Discussions tab](link-to-discussions).  
-- Contact us on [Discord/Reddit/etc.] (optional).  
 
 ---
 

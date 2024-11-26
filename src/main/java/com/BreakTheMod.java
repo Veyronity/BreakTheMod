@@ -30,7 +30,6 @@ public class BreakTheMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         MinecraftClient client = MinecraftClient.getInstance();
-
         if (client != null) {
             nearby.register();
             lastSeen.register();
@@ -41,6 +40,7 @@ public class BreakTheMod implements ClientModInitializer {
             townless.register();
             whereIs.register();
             GoTo.register();
+            help.register();
         } else {
             LOGGER.error("Minecraft client instance is null, cannot initialize commands.");
         }
