@@ -19,6 +19,7 @@ List the key features of your mod. Use bullet points to make it scannable. Optio
 | BreakTheMod-1.0.0-OpenBeta | sha256Checksum |
 |----------|----------|
 | [BreakTheMod](/breakthemod.jar) | [Sha256Checksum](/breakthemod.jar.sha256)|
+| [BreakTheMod-1.21.1](/breakthemod-1.21.1.jar) | [Sha256Checksum](/breakthemod-1.21.jar.sha256)|
 
 ### **Requirements**
 - Minecraft version: `1.20.4`
