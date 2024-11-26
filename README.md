@@ -27,7 +27,7 @@ List the key features of your mod. Use bullet points to make it scannable. Optio
   - `Fabric-API`
 
 ### **Steps**
-1. Download the mod from [Modrinth]().
+1. Download the mod from [Modrinth](https://modrinth.com/mod/breakthemod/).
 2. Install Fabric (if not already installed).  
 3. Place the mod `.jar` file in the `mods` folder of your Minecraft directory.  
 4. Launch Minecraft and enjoy!
