@@ -16,10 +16,10 @@ List the key features of your mod. Use bullet points to make it scannable. Optio
 ---
 
 ## **Installation**
-| BreakTheMod-1.0.0-OpenBeta | sha256Checksum |
-|----------|----------|
-| [BreakTheMod](/breakthemod.jar) | [Sha256Checksum](/breakthemod.jar.sha256)|
-| [BreakTheMod-1.21.1](/breakthemod-1.21.1.jar) | [Sha256Checksum](/breakthemod-1.21.jar.sha256)|
+| BreakTheMod-1.0.0-OpenBeta 
+---
+| [BreakTheMod](/breakthemod.jar) 
+| [BreakTheMod-1.21.1](/breakthemod-1.21.1.jar) 
 
 ### **Requirements**
 - Minecraft version: `1.20.4`
@@ -51,7 +51,7 @@ Review [CONTRIBUTING.md](/CONTRIBUTING.md) for more details.
 ---
 
 ## **Credits**
-> - Developed by 
+> - Developed by charis_k
 > - Special thanks to Veyronity
 
 ---
@@ -67,3 +67,7 @@ Review [CONTRIBUTING.md](/CONTRIBUTING.md) for more details.
 - [Discord Server](https://discord.gg/RVkwSrPyuq) 
 
 ---
+
+## **For nerds**
+- [BreakTheMod-1.20.4Sha256Checksum](/breakthemod.jar.sha256)
+- [BreakTheMod-1.21.1Sha256Checksum](/breakthemod-1.21.jar.sha256)
