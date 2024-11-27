@@ -10,7 +10,7 @@ Thank you for your interest in contributing to *BreakTheMod*! Contributions help
 Here are some ways you can contribute:
 
 1. **Reporting Issues**  
-   - Found a bug? Submit it to the [Issues tab]().  
+   - Found a bug? Submit it to the [Issues tab](https://github.com/Veyronity/BreakTheMod/issues).  
    - Include details like:  
      - Steps to reproduce the issue  
      - Crash logs or screenshots (if applicable)
