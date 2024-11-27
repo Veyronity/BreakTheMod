@@ -16,9 +16,9 @@ List the key features of your mod. Use bullet points to make it scannable. Optio
 ---
 
 ## **Installation**
-| BreakTheMod-1.0.0 | 
+| BreakTheMod-1.20.4 | BreakTheMod-1.21.1 |
 |----------|----------|
-| [BreakTheMod](/breakthemod.jar) | [BreakTheMod-1.21.1](/breakthemod-1.21.1.jar) 
+| [BreakTheMod](/breakthemod.jar) | [BreakTheMod1.21.1](/breakthemod-1.21.1.jar)|
 
 ### **Requirements**
 - Minecraft version: `1.20.4`
