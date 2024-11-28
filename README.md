@@ -16,11 +16,9 @@ List the key features of your mod. Use bullet points to make it scannable. Optio
 ---
 
 ## **Installation**
-You should really use the 1.20.4 jar, it is compatible with 1.21.1
-| BreakTheMod-1.0.0
----
-[BreakTheMod](/breakthemod.jar) 
-[BreakTheMod-1.21.1](/breakthemod-1.21.1.jar) 
+| BreakTheMod-1.20.4 | BreakTheMod-1.21.1 |
+|----------|----------|
+| [BreakTheMod](/breakthemod.jar) | [BreakTheMod1.21.1](/breakthemod-1.21.1.jar)|
 
 ### **Requirements**
 - Minecraft version: `1.20.4`
