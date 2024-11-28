@@ -8,7 +8,6 @@
 ---
 
 ## **Features**
-List the key features of your mod. Use bullet points to make it scannable. Optionally, include images or GIFs.
 
 - WhereIs: It tells you where a player is based on the map api.  
 - Nearby: It tellsy ou where players are in the rendered chunks, if they would be visible on the map ofcourse  
