@@ -37,7 +37,7 @@ public class help {
     public static void register() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             LiteralArgumentBuilder<FabricClientCommandSource> command = LiteralArgumentBuilder
-                .<FabricClientCommandSource>literal("help")
+                .<FabricClientCommandSource>literal("commands")
                     .executes(context -> {
                     MinecraftClient client = MinecraftClient.getInstance();
                     if (client.player == null) {
