@@ -73,4 +73,3 @@ Review [CONTRIBUTING.md](/CONTRIBUTING.md) for more details.
 
 ## **For nerds**
 - [BreakTheMod-1.20.4Sha256Checksum](/breakthemod.jar.sha256)
-- [BreakTheMod-1.21.1Sha256Checksum](/breakthemod-1.21.jar.sha256)
