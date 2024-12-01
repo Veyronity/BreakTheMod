@@ -10,15 +10,19 @@
 ## **Features**
 
 - WhereIs: It tells you where a player is based on the map api.  
-- Nearby: It tellsy ou where players are in the rendered chunks, if they would be visible on the map ofcourse  
+- Nearby: It tells you where players are in the rendered chunks, if they would be visible on the map ofcourse  
+- Locate: It tells you where a town or nation is
+- GoTo: Tells you in which town to spawn in so you are the closest to the town you want to go to
+- onlineStaff: It tells you all online staff
+- townless: It gives you all online townless users
+- coords: It gives you information about coordinates
+- discordLinked: It tells you if a user has linked their discord account to their emc account and if yes gives you the link to their discord account
 
 ---
 
 ## **Installation**
- You should really use the 1.20.4 jar, it is compatible with 1.21.1
-| BreakTheMod-1.20.4 | BreakTheMod-1.21.1 |
-|----------|----------|
-| [BreakTheMod](/breakthemod.jar) | [BreakTheMod1.21.1](/breakthemod-1.21.1.jar)|
+
+[BreakTheMod](/breakthemod.jar) 
 
 ### **Requirements**
 - Minecraft version: `1.20.4`

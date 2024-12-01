@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with <Your Project Name>. If not, see <https://www.gnu.org/licenses/>.
+ * along with BreakTheMod. If not, see <https://www.gnu.org/licenses/>.
  */
 package com.commands;
 
@@ -33,6 +33,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.Vec3d;
 import com.utils.Prefix;
+import net.minecraft.util.Identifier;
 
 public class nearby {
     private static final Logger LOGGER = LoggerFactory.getLogger("breakthemod");
@@ -52,14 +53,25 @@ public class nearby {
                     CompletableFuture.runAsync(() -> {
                         try {
                             List<String> playerInfoList = new ArrayList<>();
-                            
 
                             for (Entity entity : client.world.getEntities()) {
-
-                                if (entity instanceof PlayerEntity && entity != client.player  ) {
+                                if (entity instanceof PlayerEntity && entity != client.player) {
                                     PlayerEntity otherPlayer = (PlayerEntity) entity;
+
+                                    // Skip invisible players
                                     if (otherPlayer.isInvisible()) {
-                                        return; 
+                                        continue;
+                                    }
+
+                                    // Check for the conditions to hide the player
+                                    boolean inRiptide = isPlayerInRiptideAnimation(otherPlayer);
+                                    boolean inNether = isInNether(otherPlayer);
+                                    boolean inVehicle = isInVehicle(otherPlayer);
+                                    boolean sneaking = isSneaking(otherPlayer);
+
+                                    // Skip the player if they are sneaking, in a vehicle, or in the Nether
+                                    if (sneaking || inVehicle || inNether || inRiptide) {
+                                        continue;
                                     }
 
                                     Vec3d otherPlayerPos = otherPlayer.getPos();
@@ -68,29 +80,29 @@ public class nearby {
                                         (int) Math.floor(otherPlayerPos.getY()),
                                         (int) Math.floor(otherPlayerPos.getZ())
                                     );
-                                
+
                                     boolean isUnderAnyBlock = false;
-                                    for (int y = playerBlockPos.getY() + 1; y <= client.world.getTopY(); y++) { // Loop from player's head to world top
+                                    for (int y = playerBlockPos.getY() + 1; y <= client.world.getTopY(); y++) { 
                                         BlockPos checkPos = new BlockPos(playerBlockPos.getX(), y, playerBlockPos.getZ());
                                         BlockState blockStateAbove = client.world.getBlockState(checkPos);
-                                
-                                        if (!blockStateAbove.isAir()) { // If there is a block
+
+                                        if (!blockStateAbove.isAir()) { 
                                             isUnderAnyBlock = true;
                                             break;
                                         }
                                     }
-                                
-                                    if (!isUnderAnyBlock) { // Only add players without blocks above them
+
+                                    if (!isUnderAnyBlock) { 
                                         double distance = client.player.getPos().distanceTo(otherPlayerPos);
                                         String otherPlayerName = otherPlayer.getName().getString();
                                         int x = (int) otherPlayerPos.getX();
                                         int z = (int) otherPlayerPos.getZ();
-                                
-                                        playerInfoList.add(String.format("- %s (%d, %d) distance: %.1f blocks",
-                                            otherPlayerName, x, z, distance));
+
+                                        String status = "";
+                                        playerInfoList.add(String.format("- %s (%d, %d) distance: %.1f blocks %s",
+                                            otherPlayerName, x, z, distance, status));
                                     }
                                 }
-
                             }
 
                             if (playerInfoList.isEmpty()) {
@@ -117,9 +129,29 @@ public class nearby {
                     return 1;
                 });
 
-            dispatcher.register(command);  
+            dispatcher.register(command);
         });
     }
+
+    private static boolean isPlayerInRiptideAnimation(PlayerEntity player) {
+        return player.getActiveItem().getItem().toString().contains("riptide");
+    }
+
+    private static boolean isInNether(PlayerEntity player) {
+        // Check if the player is in the Nether based on dimension ID
+        return player.getWorld().getRegistryKey().getValue().equals(new Identifier("minecraft", "nether"));
+    }
+
+    private static boolean isInVehicle(PlayerEntity player) {
+        return player.getVehicle() != null && 
+               (player.getVehicle() instanceof net.minecraft.entity.vehicle.BoatEntity ||
+                player.getVehicle() instanceof net.minecraft.entity.vehicle.MinecartEntity);
+    }
+
+    private static boolean isSneaking(PlayerEntity player) {
+        return player.isSneaking();
+    }
+
     private static void sendMessage(MinecraftClient client, Text message) {
         client.execute(() -> {
             if (client.player != null) {
@@ -129,5 +161,4 @@ public class nearby {
             }
         });
     }
-     
 }
