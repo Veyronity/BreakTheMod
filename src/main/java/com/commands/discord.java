@@ -107,7 +107,7 @@ public class discord {
                                                 )
 
                                         );
-                                        client.player.sendMessage(result, false);
+                                        sendMessage(client, result);
                                     });
                                 } else {
                                     client.execute(() -> sendMessage(client, Text.literal("No Discord ID linked with the provided Minecraft username.")
