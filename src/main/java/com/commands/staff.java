@@ -20,6 +20,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.utils.*;
 import com.google.gson.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -55,6 +56,7 @@ public class staff {
                             JsonObject staff = JsonParser.parseString(Fetch.Fetch("https://raw.githubusercontent.com/jwkerr/staff/master/staff.json", null)).getAsJsonObject();
                             JsonArray staffList = new JsonArray();
                             String[] roles = {"owner", "admin", "developer", "staffmanager", "moderator", "helper"};
+                            ArrayList<String> onlineStaff = new ArrayList<>();
 
                             for (String role : roles) {
                                 if (staff.has(role)) {
@@ -69,42 +71,13 @@ public class staff {
                                     }
                                 }
                             }
-
-                            // Create the payload to send to the second API
-                            JsonObject payload = new JsonObject();
-                            payload.add("query", staffList);
-                            JsonObject template = new JsonObject();
-                            template.addProperty("name", true);
-                            template.addProperty("uuid", true);
-                            template.addProperty("status", true);
-                            payload.add("template", template);
-
-                            JsonArray response = JsonParser.parseString(Fetch.Fetch("https://api.earthmc.net/v3/aurora/players", payload.toString())).getAsJsonArray();
-
-                            List<String> onlineStaff = new ArrayList<>();
-
-                            for (JsonElement playerElement : response) {
-                                if (playerElement.isJsonObject()) {
-                                    JsonObject playerObj = playerElement.getAsJsonObject();
-                                    String name = playerObj.get("name").getAsString();
-                                    if (playerObj.has("status") && playerObj.get("status").isJsonObject()) {
-                                        JsonObject statsObj = playerObj.getAsJsonObject("status");
-                            
-                                        if (statsObj.has("isOnline") && statsObj.get("isOnline").isJsonPrimitive() && statsObj.get("isOnline").getAsJsonPrimitive().isBoolean()) {
-                                            boolean status = statsObj.get("isOnline").getAsBoolean();
-                                            
-                                            if (status) {
-                                                onlineStaff.add(name);
-                                            }
-                                        } else {
-                                            LOGGER.error("Missing or invalid 'status' for player: " + name);
-                                            sendMessage(client, Text.literal("Command has exited with an error, Contact Dev").setStyle(Style.EMPTY.withColor(Formatting.RED)));
-                                        }
-                                    } else {
-                                        LOGGER.error("Missing or invalid 'stats' for player: " + name);
-                                        sendMessage(client, Text.literal("Command has exited with an error, Contact Dev").setStyle(Style.EMPTY.withColor(Formatting.RED)));
-                                    }
+                            int counter = 0;
+                            for (PlayerListEntry entry : client.getNetworkHandler().getPlayerList()) {
+                                String playerName = entry.getProfile().getName();
+                                if (playerName.equalsIgnoreCase(staffList.get(counter).getAsString())){
+                                    onlineStaff.add(staffList.get(counter).getAsString());
                                 }
+                                counter++;
                             }
 
                             client.execute(() -> {
