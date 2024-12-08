@@ -18,6 +18,7 @@ package com.utils;
 import net.minecraft.text.*;
 
 public class Prefix{
+
     public static TextColor getColorFromHex(String hex) {
         try {
             if (!hex.startsWith("#")) {
@@ -29,6 +30,7 @@ public class Prefix{
             throw new IllegalArgumentException("Invalid hex color format. Ensure it is in #RRGGBB format.", e);
         }
     }
+    
     public static Text getPrefix(){
         MutableText prefix = Text.empty()
         .append(Text.literal("B").setStyle(Style.EMPTY.withColor(getColorFromHex("#EAEAEA"))))

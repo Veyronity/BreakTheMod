@@ -3,7 +3,7 @@ loaderVersion="[>=0.16.5)"
 license="GPLV-3"
 [[mods]]
 modId="breakthemod"
-version="1.0.0"
+version="1.0.4"
 displayName="BreakTheMod"
 description="Mod version of breakthebot."
 logoFile="assets/icon.png"  # Path to the icon relative to the JAR root

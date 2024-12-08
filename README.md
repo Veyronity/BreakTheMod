@@ -1,7 +1,6 @@
 # **BreakTheMod**
-
+![Build Status](https://github.com/chariskar/breakthemod/actions/workflows/build.yml/badge.svg)
 ![BreakTheMod](/src/main/resources/assets//icon.png)
-
 ## **Description**
 *BreakTheMod* enhances Minecraft by adding a select few commands from BreakTheBot, and a few new ones, like whereIs and nearby.
 
@@ -73,4 +72,3 @@ Review [CONTRIBUTING.md](/CONTRIBUTING.md) for more details.
 
 ## **For nerds**
 - [BreakTheMod-1.20.4Sha256Checksum](/breakthemod.jar.sha256)
-- [BreakTheMod-1.21.1Sha256Checksum](/breakthemod-1.21.jar.sha256)
