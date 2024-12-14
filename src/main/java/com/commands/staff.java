@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with <Your Project Name>. If not, see <https://www.gnu.org/licenses/>.
+ * along with BreakTheMod. If not, see <https://www.gnu.org/licenses/>.
  */
 package com.commands;
 
@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
@@ -53,55 +54,53 @@ public class staff {
                         try {
                             fetch Fetch = new fetch();
 
-                            JsonObject staff = JsonParser.parseString(Fetch.Fetch("https://raw.githubusercontent.com/jwkerr/staff/master/staff.json", null)).getAsJsonObject();
-                            JsonArray staffList = new JsonArray();
-                            String[] roles = {"owner", "admin", "developer", "staffmanager", "moderator", "helper"};
-                            ArrayList<String> onlineStaff = new ArrayList<>();
+                            // Fetch and parse the JSON
+                            String jsonResponse = Fetch.Fetch("https://raw.githubusercontent.com/jwkerr/staff/master/staff.json", null);
+                            JsonObject staffJson = JsonParser.parseString(jsonResponse).getAsJsonObject();
 
-                            for (String role : roles) {
-                                if (staff.has(role)) {
-                                    JsonArray roleArray = staff.getAsJsonArray(role);
-                                    for (JsonElement roleElement : roleArray) {
-                                        if (roleElement.isJsonPrimitive() && roleElement.getAsJsonPrimitive().isString()) {
-                                            String uuid = roleElement.getAsString();
-                                            staffList.add(uuid); 
-                                        } else {
-                                            LOGGER.error("Unexpected element in role array for role: " + role);
-                                        }
+                            // Extract all UUIDs into a single list
+                            List<String> staffUuids = new ArrayList<>();
+                            for (String role : staffJson.keySet()) {
+                                JsonArray roleArray = staffJson.getAsJsonArray(role);
+                                for (JsonElement element : roleArray) {
+                                    if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+                                        staffUuids.add(element.getAsString());
                                     }
                                 }
                             }
-                            int counter = 0;
-                            for (PlayerListEntry entry : client.getNetworkHandler().getPlayerList()) {
-                                String playerName = entry.getProfile().getName();
-                                if (playerName.equalsIgnoreCase(staffList.get(counter).getAsString())){
-                                    onlineStaff.add(staffList.get(counter).getAsString());
-                                }
-                                counter++;
-                            }
 
+                            // Check online players
+                            List<String> onlineStaff = client.getNetworkHandler().getPlayerList().stream()
+                                .filter(entry -> staffUuids.contains(entry.getProfile().getId().toString()))
+                                .map(entry -> entry.getProfile().getName())
+                                .collect(Collectors.toList());
+
+                            // Display results
                             client.execute(() -> {
                                 if (!onlineStaff.isEmpty()) {
-                                    Text styledPart = Text.literal("").setStyle(Style.EMPTY.withColor(Formatting.AQUA));
-                                    Text onlineStaffText = Text.literal(String.join(", ", onlineStaff));
-                                    Text message = Text.literal("").append(styledPart).append(onlineStaffText).append(", [").append(String.valueOf(onlineStaff.size())).append("]");
+                                    Text styledPart = Text.literal("Online Staff: ").setStyle(Style.EMPTY.withColor(Formatting.AQUA));
+                                    Text onlineStaffText = Text.literal(String.join(", ", onlineStaff))
+                                        .setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+                                    Text message = Text.literal("")
+                                        .append(styledPart)
+                                        .append(onlineStaffText)
+                                        .append(" [" + onlineStaff.size() + "]");
                                     sendMessage(client, message);
                                 } else {
                                     sendMessage(client, Text.literal("No staff online").setStyle(Style.EMPTY.withColor(Formatting.DARK_RED)));
                                 }
                             });
-                            
+
                         } catch (Exception e) {
-                            e.printStackTrace();
-                            client.execute(() -> sendMessage(client, Text.literal("Command has exited with an exception").setStyle(Style.EMPTY.withColor(Formatting.RED))));
-                            LOGGER.error("Fetch has exited with an exception: " + e.getMessage());
+                            LOGGER.error("An error occurred while fetching staff: ", e);
+                            client.execute(() -> sendMessage(client, Text.literal("An error occurred while fetching staff").setStyle(Style.EMPTY.withColor(Formatting.RED))));
                         }
                     });
 
                     return 1;
                 });
 
-            dispatcher.register(command);  
+            dispatcher.register(command);
         });
     }
 
